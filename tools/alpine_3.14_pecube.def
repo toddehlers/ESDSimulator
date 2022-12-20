@@ -7,7 +7,7 @@ Stage: devel
 
     # Get source code
     cd /root/
-    git clone --depth 1 --branch "master" "https://xxx:yyy@esdynamics.geo.uni-tuebingen.de/git/willi/ESDSimulator.git"
+    git clone --depth 1 --branch "master" "git@github.com:toddehlers/ESDSimulator.git"
 
     # Compile
     cd ESDSimulator/src/Pecube_D
