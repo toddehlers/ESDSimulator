@@ -1238,8 +1238,9 @@ surf_latitude = 0.0
               else if (zsurf(i) < -2.0) then
                 tsurf = 2.0
               else
-                gradient = (tmsl - config%ocean_temperature_value) / 2.0
+                gradient = (tmsl - config%ocean_temperature_value) / 2.0 ! Height is 2 km
                 tsurf = tmsl + (zsurf(i) * gradient)
+                call log_message("i: " + i + ", zsurf(i): " + zsurf(i) + ", gradient: " + gradient + ", tsurf: " + tsurf)
               endif
 
                zh = zsurf(i) + zl
