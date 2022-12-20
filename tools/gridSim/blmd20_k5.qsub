@@ -1,0 +1,72 @@
+### *********************************************************************
+### SCRIPT TO RUN MATLAB SIMULATIONS ON PETRARCH CLUSTER
+### ********************************************************************
+
+### SET THE NAME OF THE JOB AS IT WILL APPEAR IN QSUB
+### "UPDATE NEXT LINE"
+#PBS -N blmd20_k5
+
+### MAKE SURE BASH IS THE SHELL IN WHICH THE JOB WILL RUN
+#PBS -S /bin/bash
+
+### SPECIFY THE NAMES OF THE OUTPUT AND ERROR FILES
+### "UPDATE NEXT 2 LINES"
+#PBS -o blmd20_k5.out
+#PBS -e blmd20_k5.err
+
+### SPECIFY PARTITION (xeon = Xeon nodes; opteron = Opteron nodes)
+#PBS -W x=PARTITION:opteron
+### NAME OF THE QUEUE (DEFAULT FOR THE TRANS CLUSTER)
+#PBS -q default
+
+### REQUESTED RESOURCE
+###     In this case 1 node (=80 cpus on the petrarch cluster) with
+###     an estimated wall clock time of 72 hours.
+#PBS -l walltime=2400:0:00
+
+### CONTACT INFO FOR JOB STATUS
+###     Mail at Abort, Begin, and End
+#PBS -m abe
+###     Change the e-mail address to yours
+#PBS -M tehlers@umich.edu
+
+### ***********************************************************************
+### DONE WITH PBS SPECIFICATION - START USER DEFINED OPERATION(S)
+### ***********************************************************************
+
+### DEFINE MODEL DIRECTORY FOR THIS SIMULATION
+
+### Make sure you have a log of the machines on which this job ran;
+### the PBS_NODEFILE environment variable has the location of this file
+#echo "Running blmd20_k5:"
+#cat $PBS_NODEFILE
+
+### Load required modules
+        source /etc/profile.d/modules.sh
+        #module load Intel-10.1.008
+        #module load portland-707
+        module load matlab-2007a
+        #module load tecplot
+
+### DEFINE MODEL DIRECTORY FOR THIS SIMULATION
+###     "UPDATE NEXT 3 LINES"
+
+    mkdir /work/tehlers/blmd20_k5
+    cd /work/tehlers/blmd20_k5
+    cp /esp/data2/tehlers/wind_river2/BullLake/blmd20/kset5/* .
+
+    cp /esp/data2/tehlers/wind_river2/diffusion_func.m .
+    cp /esp/data2/tehlers/wind_river2/stand_alone_diffusion_func_052008.m .
+
+### SETUP AND RUN MATLAB SIMULATION 
+    echo TransErosBL_flat > startup.m
+    matlab -nodisplay
+
+### MOVE RESULTS BACK TO AGASSIZ AND CLEAN UP
+###     "UPDATE NEXT LINE"
+
+    cp * /esp/data2/tehlers/wind_river2/BullLake/blmd20/kset5/
+    cd ..
+
+### rm -rf ms05
+

@@ -1,0 +1,150 @@
+This file lists the changes to Pecube that have been made by Todd Ehlers' Earth
+Surface Processes research group.
+
+Major Changes (summary):
+- Prediction of AHe, ZFT, ZHe, ZFT and Musc Ar/Ar ages.  AHe age prediction includes the
+  effects of grain size and alpha damage.
+- Loading of multiple topography files
+- Choice of 4 different kinematic fields
+- UTM or degrees for spatial coordinates
+- Output of surface erosion rates at each time step
+- Output of surface ages and their thermal histories at requested time steps
+- Temporal variation in surface T B/C
+- Variable node z-direction node plane spacing
+- Option for radiogenic heat production that decreases exponentially
+- Thermal model material properties now input as measured values; conductivity is calculated
+- Added PDF calculation for cascade catchments or individual basins for non-cascade model
+- Added monte carlo test to compare calculated PDFs to measured data PDFs
+
+Bugs/Untested features/Features not yet implemented:
+- (NOT YET IMPLEMENTED) The statistical comparison of observed and predicted ages is broken 
+  with the addition of age prediction at multiple times during the model run (e.g., array 
+  dimensions need to be updated)
+- (POSSIBLY RESOLVED) Large, high-resolution or long time span models crash with either no notification -or-
+  a segmentation fault.  Suspect memory issues. PLEASE REPORT IF YOU HAVE TROUBLE WITH THIS!
+- (IN REVISION) New Nepal kinematics still in revision
+
+*** The Pecube.in file has been heavily modified to accomodate the changes below ***
+*** It is strongly suggested you modify that file, rather than try to retrofit   ***
+*** your older versions                                                          ***
+
+ages_header.f90 (NEW)
+- Created ages_header subroutine to generate Tecplot-formatted age output
+  Input: (from Pecube, no additional)
+  Output: Ages_tec***.dat files
+
+create_pecube_in.f90 (MODIFIED)
+- Added ability to load multiple topography files
+  - Files can either be listed individually, or by prefix (e.g., for CASCADE outputs)
+  - If fewer topo files are listed than time steps, the final topo file will be used
+    for all subsequent time steps
+  - If more topo files are listed than time steps, program quits
+- Added flag to specify the kinematic velocity field geometry
+  - 1 = vertical exhumation
+  - 2 = non-vertical exhumation (same angle and velocity in entire model domain)
+  - 3 = listric fault (e.g., original Pecube default)
+  - 4 = Nepal model geometry
+- Added ability to have spatial dimensions in either degrees or UTM
+- Now reads in measured thermal model material properties and calculates the diffusivity
+- Now reads in Nepal thermal model inputs from Pecube.in
+
+define_proc.f90 (UNCHANGED)
+
+erates.f90 (NEW)
+- Creates erates subroutine to output erosion rates at the surface for each model time step
+  - Output file contains the background erosion rate (kinematics), relief change erosion rate
+    and the true surface erosion rate (combination of those)
+  Input: (from Pecube, no additional)
+  Output: erates_tec***.dat files
+
+find_dt.f90 (UNCHANGED)
+
+find_element.f90 (UNCHANGED)
+
+find_neighbours.f90 (UNCHANGED)
+
+find_temp.f90 (UNCHANGED)
+
+find_velo.f90 (MODIFIED)
+- Modified only to pass additional variables into the geometry subroutine called from within this
+  subroutine
+
+four1.f90 (UNCHANGED)
+
+geometry.f90 (MODIFIED)
+- Modified to generate one of 4 choices for the kinematic velocity field (see create_pecube_in.f90)
+  - NOTE: The listric fault geometry section was modified to correct a typo when the coordinate
+    system was unrotated
+
+interpol3d.f90 (UNCHANGED)
+
+interpolate.f90 (UNCHANGED)
+
+isostatic_rebound.f90 (UNCHANGED)
+
+Mad_He.f90 (MODIFIED)
+- Modified to predict 7 different AHe ages and 1 ZHe age
+  - First predicted age changed to use either Wolf et al., 1996 or Farley, 2000 kinetic parameters
+  - Ages 2-4 use the Farley, 2000 kinetics with variable grain size
+  - Ages 5-7 use the Schuster et al., 2006 kinetics to predict AHe ages with alpha damage
+  - Age 8 uses the Reiners et al., 2004 ZHe kinetics
+
+Mad_Trax.f (MODIFIED)
+- Modified the Crowley et al., 1991 (F-apatite) kinetic parameters to use the correct beta value
+
+make_matrix.f90 (MODIFIED)
+- Modified to pass the additional variables into the geometry subroutine called within this
+  subroutine
+- Changed the code to allow for variable surface temperature with time (as topography evolves)
+- Modified code to allow exponentially decreasing heat production
+- Code can now use Nepal model material properties
+
+Muscovite.f (NEW)
+- Adapted the Muscovite.f code from the Quantitative Thermochronology book for use in Pecube
+- Predicts MAr ages that are written to the Ages_tec***.dat files
+
+Pecube.f90 (MODIFIED)
+- Modified to load multiple topography files (see create_pecube_in.f90)
+- Modified to track several sets of surface nodes to predict surface ages at each time step
+- Modified to output the positon and thermal histories of each set of surface nodes (if desired)
+  (see therm_output.f90)
+- Some modification to accomodate the various exhumation geometries (see geometry.f90)
+- Added arrays to store surface erosion rates (see erates.f90)
+- Modified storage of variable kfix to be able to differentiate between fixed surface and basal
+  temperatures (lines 539-540)
+- Added subroutine tec_mat_output.f90 to write tecplot formatted output for the thermal field at
+  each time step (including the kinematic field; see tec_mat_output.f90)
+- Changed number of arrays and array sizes to allow for multiple AHe, AFT, ZHe, ZFT and Musc Ar/Ar ages
+- Changed thermal history section to set surface temperatures not found by interpol3d to temperature according
+  to elevation and lapse rate
+  - This section also now allows for negative surface T
+- Modified calculation of Pe to use correct number for Nepal model kinematics
+- Added option to have variable z node plane spacing, as described above
+- Added calculation of PDFs for cascade catchments, individual (user specified) basins for non-cascade models,
+  or known measured data for individual basins
+- Added monte carlo comparison of PDFs for measured data and Pecube calculated basins
+
+realft.f90 (UNCHANGED)
+
+sinft.f90 (UNCHANGED)
+
+solve_iterative.f90 (MODIFIED)
+- Modified end of subroutine to allow for temporally variable surface T B/C
+
+tec_mat_output.f90 (NEW)
+- Added this subroutine to generate formatted output of the thermal and kinematic velocity fields that could
+  be directly loaded into Tecplot and FE Block data.
+  Input: (from Pecube, no additional)
+  Output: Temps_tec***.dat files
+
+therm_output.f90 (NEW)
+- Added this subroutine to write out the x, y, z, time and temperature histories for the surface nodes.  A flag in
+  the Pecube.in file designates whether or not this output is desired at each time step.
+  Input: (from Pecube, no additional)
+  Output: X_hist_***My_surf_***Ma.dat, Y_hist_***My_surf_***Ma.dat,Z_hist_***My_surf_***Ma.dat,
+          time_hist_***My_surf_***Ma.dat, Temp_hist_***My_surf_***Ma.dat
+
+tridag.f (UNCHANGED)
+
+ZFT.f (NEW)
+- Modified the Muscovite.f subroutine to use the ZFT kinetics and work with Pecube to predict ZFT ages

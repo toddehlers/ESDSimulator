@@ -1,0 +1,316 @@
+00README_Subroutines
+List of CASCADE subroutines, I/O and general program functionality
+dwhipp 05/08
+
+--------------------------------------------------------------------------------
+
+General overview:
+CASCADE is a planform (2D) landform evolution model capable of modeling to
+formation of topography on the Earth's surface. Topography results from the
+balance of prescribed uplift/rock advection and surface processes such as river
+incision, hillslope diffusion and landsliding. A key feature of CASCADE is the
+ability to use irregularly spaced finite element meshes to generate realistic
+river drainage network patterns.
+
+--------------------------------------------------------------------------------
+
+Running the code:
+CASCADE is compiled using the standard makefile procedure:
+make lib
+make cascade
+make clean
+
+The code is run using the resulting executable 
+./cascade
+
+Model input parameters are specified in the initialize_general_parameters.f
+subroutine, described below
+
+--------------------------------------------------------------------------------
+
+List of subroutines (alphabetical order):
+build_a.f
+- Builds conductivity and mass matrices
+Input:
+- Node coordinates for element: x1,x2,x3,y1,y2,y3
+- Average conductivity over triangle: xk
+- Time integration parameter: alpha
+Output:
+- Elemental conductivity matrix: ael
+- Mass matrix: ae2
+
+cascade.f
+- Main CASCADE program file
+Input:
+- Parameters listed in initialize_general_parameters subroutine
+Output:
+- Predicted topography, catchments, etc.
+
+change_sea_level.f
+- Varies sea level with time
+Input:
+- Current model time: time
+Output:
+- New sea level: sea_level
+
+check_for_removal.f
+- Routine where the condition for node removal is defined
+Input:
+- Surface attached to current node: surface
+- Erosion/time step info: dh,dt
+- Neighbor info: nb,nn
+- Permisible parameter ranges: fluxmax_erosion,surfmin
+Output:
+- Whether or not node is removed: iremove
+
+check_mesh.f
+- Routine to check mesh for updating during dynamic remeshing
+Input:
+- There are a large number of variables/arrays passed into this routine, please
+  refer to the comments at the top of it for details
+Output:
+- See above
+
+debug.f
+- Debugging routine for tracking issues with CASCADE
+Input:
+- Debugger output message: message
+- Flag for whether or not message is written out: iflag
+Output:
+- none
+
+diffusion_erosion.f
+- Subroutine for simulating hillslope diffusion
+Input:
+- See subroutine header, large number of items passed into this routine
+Output:
+- See above
+
+erosional_properties.f
+- Routine for determining the erosional properties
+Input:
+- Node coordinates: y,y,h
+- Elevation of base of soil: h0
+- Initial topography: hi
+- Nodal info: nnode,nnodemax
+- Erosional parameters: param,nparam
+Output:
+- Erosional parameters (updated): param
+
+find_catchment.f
+- Finds the distribution of river drainage basins (catchments)
+Input:
+- Large number of parameters passed into/out of this routine, please see header
+  for details
+Output:
+- See above
+
+find_donors.f
+- Finds the lowest neighbor to a given node among the natural neighbors
+Input:
+- Position info: x,y,h
+- Nodal info: nnode,nb,nn,nbmax,delta
+Output:
+- Stream slope: slope
+- Stream length: length
+- End of segment: ndon
+
+find_dslope.f
+- Finds greatest downstream slope for each node
+Input:
+- Position info: x,y,h
+- Nodal info: nbmax,nnode,nn,nb
+Output:
+- Downstream slope: dslope
+
+find_neighbours.f
+- Routine to find list of natural neighbors for each node
+Input:
+- Large number of variables/arrays passed into/out of this routine, please see
+  the header for details
+Output:
+- See above
+
+find_order.f
+- Calculate order for storing nodes to do river erosion calculations
+Input:
+- Nodal info: nnode
+- Bucket passing arrays: ibucket,ndon,fix
+Output:
+- Order of nodes: iorder,norder
+
+find_surface.f
+- Finds surface area attached to each node
+Input:
+- Position info: x,y
+- Nodal info: nn,nb,nbmax,nnode
+- Working arrays: cc,pp,a,b,newsurface,surfscale
+Output:
+- Surface area for each node: surface
+
+flexure.f
+- Subroutine to calculate flexure of Earth's surface (treated as thin elastic
+  plate) due to sediment loading and erosional unloading
+Input:
+- Large number of items passed into/out of this routine, please see routine
+  header for details
+Output:
+- See above
+
+fluvial_erosion.f
+- Calculates river erosion
+Input:
+- Large number of items passed into/out of this routine, please see routine
+  header for details
+Output:
+- See above
+
+four1.f
+- Taken directly from Numerical Recipes in Fortan 77, see book for details
+
+initialize_general_parameters.f
+- Routine read to supply input parameters to a CASCADE model run
+Input:
+- Large number of input parameters listed in this subroutine. Header file
+  contains details on input parameters and units, please see that for detail.
+Output:
+- none
+
+initialize_nodal_geometry.f
+- Subroutine to read in intial node geometry
+Input:
+- Node info: nnodemax
+- Run name: run_name,nrun_name
+Output:
+- Node info: nnode,delta,surfscale
+- Position info: x,y,h,surfmin
+- B/C nodes: fix,bdry
+
+iread_but_skip_comment.f
+- Subroutine for reading integer input files and skipping commented lines
+Input:
+- Array length: n
+- Data unit number: iunit
+Output:
+- Array from read file: x
+
+landslide.f
+- Subroutine for simulating landsliding
+Input:
+- Large amount of variables/arrays passed into/out of this routine, please see
+  code comments for details on this routine
+Output:
+- See above
+
+landslide_simple.f
+- Similar, simplified version of the routine above, see landslide.f
+
+mdian2.f
+- Taken directly from Numerical Recipes in Fortan 77, see book for details
+
+rainmaker.f
+- Subroutine to simulate focusing of preciptiation do to mountain topography
+Input:
+- Nodal info: nnode
+- Position info: x,y,h,surface
+- Water input: water
+- Precipitation style flags: iflag_oro,iflag_uni
+Output:
+- Precipitation distribution: prec
+
+random.f
+- Random number generator based on code from Numerical Recipes, see book for
+  details
+Input:
+- 
+Output:
+- 
+
+read_but_skip_comment.f
+- Routine to read in real number values while skipping comments
+Input:
+- Array size: n
+- File unit number: iunit
+Output:
+- Output array: x
+
+realft.f
+- Taken from Numerical Recipes, see book for details
+
+show.f
+- Subroutine for plotting primary fields with rivers, lakes and catchments
+Input:
+- Large number of input variables/arrays, see subroutine header for details
+Output:
+- none
+
+sinft.f
+- Taken from Numerical Recipes, see book for details
+
+solve_diffusion.f
+- Iterative solver for hillslope diffusion
+Input:
+- Large number of variables/arrays passed into/out of this subroutine, see
+  header for details
+Output:
+- See above
+
+tectonic_movement.f
+- Subroutine to specify lateral advection of nodes in mesh due to tectonic
+  transport
+Input:
+- Large number of variables/arrays passed into/out of this subroutine, see
+  header for details
+Output:
+- See above
+
+tectonic_uplift.f
+- Subroutine to specify the tectonic uplift function (vertical advection)
+Input:
+- Position info: x,y,h,h0,hi
+- Nodal info: nnode,fix,surface
+- Time info: dt,time
+- Uplift rate: uplift_rate
+Output:
+- New topography: h
+- Updated original topography: hi
+- Updated bedrock-aluvium interface: h0
+- Updated influx of material by tectonic uplift: influx
+
+update_bedrock.f
+- Updates bedrock position in case of bedrock incision by rivers
+Input:
+- Current topography: h
+- Current bedrock-aluvium interface: h0
+- Number of nodes: nnode
+Output:
+- Updated bedrock-aluvium interface: h0
+
+update_time_step.f
+- Updates model time step based on criteria detailed in routine
+Input:
+- Large number of variables/arrays passed into/out of this subroutine, see
+  header for details
+Output:
+- See above
+
+write_output.f
+- Writes model output to ASCII files
+Input:
+- Large number of variables/arrays passed into/out of this subroutine, see
+  header for details
+Output:
+- Output files
+
+write_tecplot_output.f
+- Writes output for use in Tecplot
+Input:
+- See write_output.f
+Output:
+- See above
+
+--------------------------------------------------------------------------------
+
+Other files included in this distribution:
+Makefile - File for modifying CASCADE compilation process
+cascade.h - CASCADE program header file

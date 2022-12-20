@@ -1,0 +1,23 @@
+TODO:
+
+- set DEM origin
+- set model origin
+- move and resize rubber band graphically
+- add help menu with explanation how to create DEM files
+- load and save settings
+- set option for pecube output: all values below 0 are set to 0
+- port to JavaScipt!!!
+
+DONE:
+- check child output (was wrong number of nodes in .pts file)
+- output for pecube
+- add option for boundary values (child export)
+- add option to turn on / off pertube
+- rainbowcolor (blue, cyan, green, yellow, orange, red)
+- export only specific ROI (one or two)
+- better rubber band color
+- child output unit in meters
+- export to matlab / csv (x, y, z)
+- export med or high ROI to pecube
+- output for icecascade
+

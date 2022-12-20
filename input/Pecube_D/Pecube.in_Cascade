@@ -1,0 +1,596 @@
+$ *********************************************************************************
+$ *** Pecube-D
+$ *****
+$
+$ Input file for running Pecube-D.  University of Tuebingen, Germany (18 May, 2015).
+$ Report bugs noticed with this version to Todd Ehlers (todd.ehlers@uni-tuebingen.de).
+$
+$ This version of Pecube is based on the distrubtion by Jean Braun.  It has been
+$ Modified substatially to account for 
+$ a.  Calculation of predicted ages for different thermo- geochronometer systems.
+$ b.  Many different options for user defined velocity input fields (e.g. McQuarrie and 
+$     Ehlers, 2015).
+$ c.  Different output format options.
+$ d.  calculation of detrital cooling ages for user defined sample points on the topog.
+$      (e.g. Whipp et al., 2009)
+$ e.  Iterative Inversion of cooling ages for topographic change scenarios (e.g. Olen et al. 2012)
+$ f.  Monte Carlo Inversion of cooling ages to identify the denudation histories that
+$     that can produce observed ages.  (e.g. Thiede & Ehlers, 2013) 
+$ g.  Coupling with CASCADE or IceCascade (e.g Yanites and Ehlers, 2013 EPSL) 
+$ and numerous other significant changes to age prediction, heat production, shear 
+$ heating, kinematics, and thermal history output
+$ are highlighted in the readme folders in  /docs folder. Different options have also been added 
+$ for simulation other kinematic fields including an ellipsoidal exhumation field, as well as
+$ a coupling to 2D Move restoration files. Note - use of the 2D Move output for velocity fields
+$ also requires the program velocity.py. 
+$
+$ Significant program changes have been made to this version with thanks to Willi Kappler,
+$ David Whipp, and Chris Spath.  If you use this program for publications the references that
+$ describe the methods used are:.
+$
+$ Braun , J., 2003. Pecube: A new finite element code to solve the 3D heat
+$  transport equation including the effects of a time-varying, finite
+$  amplitude surface topography.  Computers and Geosciences, v.29, pp.787-794.
+$
+$ Braun , J., 2002. Quantifying the effect of recent relief changes on age-elevation
+$  relationships.  Earth and Planetary Science Letters, v.200, pp.331-343.
+$
+$ Reference to use concerning program changes made by T. Ehlers group:
+$
+$ Olen, S., Ehlers, T.A., Densmore, M.S., 2012, Limits to reconstructing paleotopography 
+$ from ther- mochronometer data, J. Geophysical Res – Earth Surface, v. 117, 
+$ doi:10.1029/2011/ JF001985
+$
+$ Whipp, D.M. Jr., Ehlers, T.A., Braun, J., Spath, C.D., 2009, Effects of exhumation 
+$ kinematics and topo- graphic evolution on detrital thermochronometer data, 
+$ J. Geophysical Res. – Earth Surface, V. 114, F04021, doi:10.1029/2008JF001195.
+$
+$ Thiede, R.C., Ehlers, T.A., 2013, Large spatial and temporal variations in Himalayan 
+$ denudation, Earth and Planetary Science Letters, 371-372, pp. 278-293.
+$
+$ McQuarrie, N., and Ehlers, T.A., 2015 Influence of thrust belt geometry 
+$ and shortening rate on thermochronometer cooling ages: Insights from the 
+$ Bhutan Himalaya, Tectonics. 34, doi:10.1002/2014TC003783.
+$ Related programs to this distribution:
+$	* Bivar - this program takes topography output from cascade and Ice and formats them for input
+$	into Pecube-D
+$   * Cascade and Ice (Univ. Tuebingen modified versions, see Yanites and Ehlers, 2012 In review).  
+$	These programs can be run prior to
+$	to Pecube-D to provide input topographies. 
+$	* velocity.py - used to take 2D Move output and create transient velocity fields
+$
+$ NOTE - not all of the above files may be in this distribution.  We're in the process of 
+$ assembling a more complete distribution.
+$ 
+$ You can add as many comment lines as you wish as long as they start with a
+$ dollar sign
+$ *********************************************************************************
+
+$ (Input 1) Name of the run (also the name of the folder in which the solution is stored)
+$ NOTE: You might need to create this folder manually before running Pecube.
+
+output/Pecube-D
+
+$ (Input 2) Number of topography files to be loaded (should be number of time steps+1)
+$ 0 = No topography file will be loaded
+$ 1 = The same topo file will be used for all time steps. (note relief can still
+$     change as specified below). Note the number of time steps, or steps in the
+$     tectonomorphic scenario is defined later.
+$ >1 = A new topo file will be loaded for each timestep
+$ If fewer topo files are listed then the number of time steps, the model will
+$   use the last topo file for the subsequent/remaining time steps.
+$ When multiple topography files are loaded Pecube will exponentially morph
+$   between the two topographies over the given time step.  tau, specified below
+$   determines the exponential rate of change in the topography.
+
+22
+
+$ (Input 3) Flag for topography input
+$ 1 = User will list all topography file names below, one file on each new line
+$ 2 = User specifies file prefix (see Input 4) and Pecube will load all
+$     files with that prefix plus a 4 digit number after it.
+$ 3 = All listed topography files are exported from 2d move
+$
+
+1
+
+$ (Input 4) Name of the topo file used
+$ "Nil" = Topography is assumed to be flat for that time step
+$ Otherwise the file should contain nx by ny elevation points (see below)
+$    defining the topography in meters
+$ Note that the evolution of this topography (in amplitude and elevation offset)
+$    can change at each time step, as specified below in Input 12.
+$ If multiple topography files are being loaded with a user defined filename
+$    prefix filename (e.g., option 2 above) then format is:
+$    prefix = "topo_input" (or another user-defined name)
+$    which will load files topo_input0000.dat, topo_input0001.dat, etc.
+$ Note: If detrital age calculation for a Cascade mesh is specified (value of 1
+$       for Input 18) then the topo files must be named topo_pecube_0000.dat,
+$       topo_pecube_0001.dat, etc or the prefix topo_pecube_ if automating it
+
+input/Pecube_Cascade_example/topo_pecube_0000.dat
+input/Pecube_Cascade_example/topo_pecube_0000.dat
+input/Pecube_Cascade_example/topo_pecube_0001.dat
+input/Pecube_Cascade_example/topo_pecube_0002.dat
+input/Pecube_Cascade_example/topo_pecube_0003.dat
+input/Pecube_Cascade_example/topo_pecube_0004.dat
+input/Pecube_Cascade_example/topo_pecube_0005.dat
+input/Pecube_Cascade_example/topo_pecube_0006.dat
+input/Pecube_Cascade_example/topo_pecube_0007.dat
+input/Pecube_Cascade_example/topo_pecube_0008.dat
+input/Pecube_Cascade_example/topo_pecube_0009.dat
+input/Pecube_Cascade_example/topo_pecube_0010.dat
+input/Pecube_Cascade_example/topo_pecube_0011.dat
+input/Pecube_Cascade_example/topo_pecube_0012.dat
+input/Pecube_Cascade_example/topo_pecube_0013.dat
+input/Pecube_Cascade_example/topo_pecube_0014.dat
+input/Pecube_Cascade_example/topo_pecube_0015.dat
+input/Pecube_Cascade_example/topo_pecube_0016.dat
+input/Pecube_Cascade_example/topo_pecube_0017.dat
+input/Pecube_Cascade_example/topo_pecube_0018.dat
+input/Pecube_Cascade_example/topo_pecube_0019.dat
+input/Pecube_Cascade_example/topo_pecube_0020.dat
+
+$Nil
+
+$ (Input 5) Coordinate system flag for Pecube input
+$ 1 = Degrees
+$ 2 = UTM (meters)
+
+2
+
+$ (Input 6) Number of points (nx, ny) in the longitude and latitude directions
+$   of the topography file being loaded.
+$ Note: The shell script make_topo.sh will output this information to the screen
+$   if you are using this to create your topo files from ArcGIS grids
+
+401 151
+
+$ (Input 7) Spacing of longitude and latitude points (in degrees or meters) in
+$   the topography input file.
+$ Note: The shell script make_topo.sh will also output this information if you
+$   use the script to export an ArcGIS DEM grid to Pecube format. Units of the
+$   values below should agree with what is specified in Input 5.
+
+1000. 1000.
+
+$ (Input 8) Skipping factor (nskip) for points in the topo input file
+$ 1 = All points of the topography are used
+$ 2 = Every second point is used, etc. 
+$ Note: nx, ny AND nskip define the resolution of the finite element mesh in the
+$   horizontal directions
+
+1
+
+$ (Input 9) Geographic location for the origin (bottom left corner) of the
+$   Pecube grid.
+$ Specify the longitude and latitude (in degrees or meters) of the bottom left
+$   corner of the topography file. Units must match above units.
+$ NOTE: a) You can set this value to be 0,0 for synthetic topography, or it
+$   can be 85670 (utm x), 983443 (utm y) or 109.756 (degrees long), 42.235
+$   (degrees lat) if you want Pecube to georeference the grid to your gegraphic
+$   area of study.
+$ NOTE: b) If you are using a DEM to generate the topography you want to specify
+$   an offset below that is 1/2 the topo file spacing specified in Input 7.
+$   (e.g., (DEM reolution / 2))
+
+0. 0.
+$43.211389629 43.211389629
+
+$ (Input 10) Number of time steps in the tectonomorphic scenario for your
+$   simulation
+$ An integer number (>= 1) is required. The value should be 1 less than the
+$   number of time step inputs defined in Input 12 below.
+$ Examples: a value of 1 will require two input lines for Input 12 below (a line
+$   for the starting time condition and one for the final time step condition).
+$   A value of 2 below will require 3 lines in Input 12 below. In this case, the
+$   first line would be the starting time condition, the second line would be
+$   the condition at some intermediate time, and final (third) line would be the
+$   final model condition.
+
+23
+
+$ (Input 11) Erosional time scale (tau, in My) for topographic change
+$   This input allows the user to have non-linear morphing of topography with
+$   time.  A large value (e.g., 1000) will generate essentially linear changes
+$   between the input topography files.  Effectively, this is the e-folding time
+$   for the topographic evolution, a.k.a. the exponential decay rate of
+$   topography.
+
+1000.
+
+$ (Input 12) Definition of the tectonomorphic time steps
+$ NOTE: The number of lines should be 1 greater than the value specified in
+$   Input 10.
+$ Each line formatted as follows:
+$ (a) Time (in My in the past)
+$   NOTES: (i) The first time step (first line) calculates a steady state
+$     thermal solution with the prescribed parameters
+$   (ii) Any transient features will occur between the previous listed time step
+$     line and the current time step line. For example, for a model with 3 time
+$     steps, a 50% decrease in topographic relief and change in the velocity
+$     field desired in the final time step would be listed on the last two
+$     lines, where the desired final relief and velocity field over that time
+$     are listed on the final time step line
+$
+$ (b) Amplification factor for relief change
+$   1 = static topography
+$   2 = 200% increase in relief over this time step
+$   0.5 = 50% decrease in relief over this time step
+$
+$ (c) Vertical offset factor (in km) for static topography elevation shifts
+$   during simulation.
+$   0 = No shift in surface elevations
+$   2 = Increase in all surface elevations by 2 km over this time step
+$   Why would you use this?  Well, if relief is 2 km, with a mean of 1 km, and
+$     relief is decreasing by 50% then if you specify a value of 0.5 (km) here
+$     it would shift your mean elevation such that it would remain at 1 km.
+$
+$ (d) Flag for output of time-temperature histories
+$   Enabling this will output temperature, time, x, y and z positions for all
+$     surface points at each step where listed.
+$   0 = No output of thermal history at the time step
+$   1 = Output of thermal history at the time step
+$   Note: Because the first time step is a steady state calculation, there is no
+$     thermal history available for the first time step.
+$   If the entire thermal history is wanted for surface points at t = 0Ma, then
+$     the user should set this flag for thermal output at the last time step
+$     specified below
+$
+$ (e) Kinematic field flag (details of kinematic field specified in subsequent
+$   inputs)
+$   1 = vertical movement (erosion only)
+$   2 = uniform diagonal movement
+$   3 = listric fault
+$   4 = New Nepal thrust belt model for rotated model (Whipp testing - 10/07)
+$   5 = Parabolic uplift field (S. Olen testing - 06/10)
+$   6 = Ellipsoid uplift field (M. Schmiddunser - 07/11)
+$       An inner and outer ellipse and the uplift rates for the three corresponding
+$       areas are specified. The uplift rate between the inner and outer ellipse will
+$       be interpolated between the inner and the outer uplift rate
+$   7 = As 6, but uses a different function for uplift rate calculation that produces
+$       a smoothed uplift profile 
+$   8 = velocity file names
+$
+$ (f) Details of kinematics
+$   If e=1, value here is the erosion rate (mm/yr)
+$   If e=2, value here is the magnitude of the velocity vector at which material
+$     is moving laterally (mm/yr) in an Eulerian reference frame
+$   If e=3, value here is the maximum slip velocity on fault (mm/yr)
+$   If e=4, enter 1, values for velocities are computed within code and scaled
+$     by 1 here
+$   If e=5, enter 1, values for velocities are based on maximum and minimum
+$           velocities defined at (k) and (l)
+$   If e=6 or e=7, enter value for uplift rate inside the inner ellipse (mm/yr)
+$
+$ ADDITIONAL OPTIONAL PARAMETERS (depending on kinematic field used)
+$ (g)
+$   If e=1, enter 0, no additional input required
+$   If e=2, enter fault dip angle theta (degrees). This is the angle from
+$     horizontal (positive down) defining the dip of the velocity vector.
+$   If e=3, enter the longitude or utm x position of one endpoint of the listric
+$     fault trace.
+$   Note: If you think of traveling along a line that starts at the first point
+$     and ends at the second, the fault would dip off to the left of that line
+$   Note:  This value must be entered in km (S. Olen, 06/21/2010)
+$   If e=4, enter the horizontal convergence rate (mm/yr) across the Main
+$     Frontal Thrust. Note: Fault geometries are hard coded in Pecube
+$   If e=5, enter the x-value for the lower right point of the parabola axis (km)
+$   If e=6 or e=7, enter the x-value for the first focus (in km)
+$
+$ (h)
+$   If e=1, enter 0, no additional input required
+$   If e=2, enter angle phi (degrees), the azimuth of the velocity vector in the
+$     x-y plane.
+$   If e=3, enter the latitude or utm y position of the first endpoint of the
+$     listric fault trace in item (g) above.
+$   Note:  This value must be entered in km (S. Olen, 06/21/2010)
+$   If e=4, enter the horizontal convergence rate (mm/yr) across the Main
+$     Boundary Thrust 
+$   If e=5, enter the y-value for the lower right point of the parabola axis (km)
+$   If e=6 or e=7, enter the y-value for the first focus (in km)
+$
+$ (i)
+$   If e=1 or e=2, enter 0, no additional input required
+$   If e=3, enter the longitude or utm x of the second end point of the listric
+$     fault.
+$   Note:  This value must be entered in km (S. Olen, 06/21/2010)
+$   If e=4, enter the horizontal convergence rate (mm/yr) across the Main
+$     Central Thrust
+$   If e=5, enter the x-value for the upper left point of the parabola axis (km)
+$   If e=6 or e=7, enter the x-value for the second focus (in km)
+$
+$ (j)
+$   If e=1 or 2, enter 0, no additional input required
+$   If e=3, enter the latitutde or utm y of the second endpoint of the listric
+$     fault.
+$   Note:  This value must be entered in km (S. Olen, 06/21/2010)
+$   If e=4, enter the horizontal extension rate (mm/yr) across the South Tibetan
+$     Detachment
+$   If e=5, enter the y-value for the upper left point of the parabola axis (km)
+$   If e=6 or e=7, enter the y-value for the second focus (in km)
+$
+$ (k)
+$   If e=1 or 2, enter 0, no additional input required
+$   If e=3, enter the soling depth (km) of the fault. Note: Fault has an
+$     exponential shape.
+$   If e=4, enter 0 or 1 for whether or not you want underplating in the Sub-
+$     Himalaya during this time step (0=no; 1=yes)
+$   If e=5, enter the minimum velocity (mmyr-1)
+$   If e=6 or e=7, enter semi-major axis of inner elipse (in km)
+$
+$ (l)
+$   If e=1 or 2, enter 0, no additional input required
+$   If e=3, enter surface dip angle of the fault in degrees
+$   If e=4, enter 0 or 1 for whether or not you want underplating in the Lesser
+$     Himalaya during this time step (0=no; 1=yes)
+$   If e=5, enter the maximum velocity (mmyr-1)
+$   If e=6 or e=7, enter semi-major axis of outer elipse (in km)
+$
+$ (m)
+$   If e=1-5, enter 0., no additonal input required
+$   If e=6 or e=7, enter uplift rate (mm/yr) outside of outer ellipse. 
+$       The uplift rate between inner and outer ellipse will be interpolated
+$       between the two values
+$
+
+
+40.0 1. 0. 0. 1. 0.0 0. 0. 0. 0. 0. 0. 0.
+30.0 1. 0. 1. 1. 0.0 0. 0. 0. 0. 0. 0. 0.
+29.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+28.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+27.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+26.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+25.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+24.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+23.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+22.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+21.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+20.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+19.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+18.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+17.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+16.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+15.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+14.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+13.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+12.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+11.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+10.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+5.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+0.0 1. 0. 1. 1. 0.25 0. 0. 0. 0. 0. 0. 0.
+
+$ (Input 12 b) If e=8 in Input 12 above, filename for velocity file
+$   The filname "NIL" means set all velocities to zero for that time period
+
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+NIL
+
+
+
+$ (Input 13) Isostasy (NOTE: All values listed on one line)
+$  Remove input (b) and (c), which are included in input 14... necessary
+$  for isostacy to turn on (S. Olen, 1/20/2010)
+$ (a) Flag for isostasy
+$   1 = isostasy on
+$   0 = isostasy off
+$ (b) Crustal density (kg/m^3)  ***Remove***
+$ (c) Mantle density (kg/m^3)  ***Remove***
+$ (d) Young modulus (Pa)
+$ (e) Poisson's ratio
+$ (f) Elastic plate thickness (*km*)
+$ (g) Size of the FFT grid for elastic rebound calculations (typically 1024 1024
+$   but must be a power of 2)
+
+0 1.d11 0.25 15. 1024 1024
+
+$ (Input 14) Thermal model input parameters
+$ NOTE: Values on two lines
+$ Note: Pecube currently assumes homogeneous medium.
+$ ** FIRST LINE **
+$ (a) Model thickness (km)
+$ (b) Number of z-node planes/layers in the z direction (integer)
+$ NOTE: If this value is zero, Pecube will automatically define the z-node plane
+$       distribution such that the elements have a 1:1 (x/y to z) aspect ratio
+$       down to 5 km below the surface, 3:1 down to 15 km below the surface and
+$       ~9:1 down to the model base.
+$ (c) Thermal conductivity (W/m K)
+$ (d) Specific heat capacity (J/kg K)
+$   *NOTE: diffusivity is now caluclated in Pecube, rather than defined here*
+$ (e) Crustal density (kg/m^3)
+$ (f) Mantle density (kg/m^3)
+$ ** SECOND LINE **
+$ (g) Temperature at the base of the model (degrees C)
+$ (h) Temperature at z=0 (degrees C)
+$   If lapse=0 this will be the surface temperature everywhere
+$ (i) Atmospheric lapse rate (degrees C/km)
+$   NOTE: Positve lapse rate => decreasing T with elevation
+$         Negative lapse rate => increasing T with elevation
+$ (j) Crustal volumetric heat production (uW/m^3)
+$ (k) e-folding depth of crustal heat production (km)
+$   NOTE: Crustal heat production is constant at the given value for all nodes
+$     above sea level and decreases exponentially below msl. Also, if efold=0,
+$     then crustal heat production will be constant everywhere
+$ (l) Mantle volumetric heat production (uW/m^3)
+$   NOTE: mantle HP not yet implemented - does nothing
+$         Also, mantle heat production is assumed to be constant
+$ (m) Shear heating
+$  Set brittle shear heating constant below
+$  1 = on
+$  0 = off
+$ (n) Shear heating constant (unitless)
+$   Scales shear heating within the brittle realm.
+$   Implemented in same form as used by F. Herman (02/08)
+$   1 = Full (unscaled) brittle shear heating
+$   0 = No brittle shear heating
+
+40. 0 2.5 1000. 2750. 3300.
+800. 15. 6.5 1.5 10. 0.1 0 0
+
+$ (Input 15) Thermal model input parameters for Nepal model geometry
+$   **NOTE** This is not used unless the geometry flag above is set to 4.
+$   On each line, there are five values. The values are for the Indian Shield,
+$   Sub-Himalaya, Lesser Himalaya, Greater Himalaya and Tethyan Himalaya
+$   Line 1: Volumetric heat production (uW/m^3)
+$   Line 2: Thermal conductivity (W/m K)
+$   Line 3: Rock density (kg/m^3)
+$   Line 4: Specific heat capacity (J/kg K)
+
+0.8,0.8,0.8,1.9,0.8
+2.75,2.75,2.75,2.75,2.75
+2700.,2700.,2700.,2700.,2700.
+1000.,1000.,1000.,1000.,1000.
+
+$ (Input 16) Option to read in thermochron data and compare to predicted ages
+$ First specify the number of data files for comparison
+$ "Nil" or 0 = No data file(s) will be read in
+$ For each file name that is specified, the file format should be as follows:
+$ First line in file = number of samples (and lines) in rest of file.
+$ Each line after that is for an individual sample and should contain (space
+$   separated)
+$ (a) Sample longitude or utm x
+$ (b) Sample latitude or utm y
+$ (c) Sample elevation
+$ (d) Flag for type of AHe age to predict:
+$   1=Default diffusion kinetics; 2-4=Use grain size of 20, 40 or 70 um, resp.
+$   5-7=Use low, moderate or high eU (radiation damage) values resp.
+$   (Schuster et al., 2006)
+$   NOTE: These values can be modifed in the Mad_He.f90 subroutine
+$   Comments in that subroutine further explain the differences above
+$ (e) AHe age (Ma), negative age if non-existant
+$ (f) AHe age error, 1s.d. (Ma), use 0 if previous value is negative
+$ (g) AFT age (Ma), negative age if non-existant
+$ (h) AFT age error, 1s.d. (Ma), use 0 if previous value is negative
+$ (i) ZHe age (Ma), negative age if non-existant
+$ (j) ZHe age error, 1s.d. (Ma), use 0 if previous value is negative
+$ (k) ZFT age (Ma), negative age if non-existant
+$ (l) ZFT age error, 1s.d. (Ma), use 0 if previous value is negative
+$ (m) MAr age (Ma), negative age if non-existant
+$ (n) MAr age error, 1s.d. (Ma), use 0 if previous value is negative
+$ (o) Sample ID
+
+$data.txt
+0
+
+
+$ NOTE: Input 17 and 18 are used for detrital age calculation.  Instructions
+$ on use are in 00README_detrital_ages file if user needs more information.
+
+$ (Input 17) Flags for which ages to output
+$ 0 = Does not calculate or output predicted ages for this system
+$ 1 = Calculates and outputs specified system's ages
+$ NOTE: See Mad_He.f90 subroutine to modify the predicted AHe ages below
+$ (a) AHe age (Default kinetics)
+$ (b) AHe age (20 um grain size)
+$ (c) AHe age (40 um grain size)
+$ (d) AHe age (70 um grain size)
+$ (e) AHe age (Low radiation damage)
+$ (f) AHe age (Moderate radiation damage)
+$ (g) AHe age (high radiation damage)
+$ (h) AFT age
+$ (i) ZHe age
+$ (j) ZFT age
+$ (k) Muscovite Ar/Ar age
+
+1 0 0 0 0 0 0 1 1 1 1
+
+$ (Input 18) Flag to calculate detrital age distributions for catchments
+$ First line:  0 = no detrital calculation; 1 = detrital calcuation
+$ Note:  If a series of CASCADE topographies were loaded in then 
+$ set Input 18 of the Pecube.in file to be 1, Pecube will output the detrital 
+$ ages of every cascade catchment at every timestep.  These files will be created 
+$ in the 'catchments' folder within your output run directory.  It will create the 
+$ 'catchments' folder if it does not exist there.  The files will be named as 
+$ 'Timestep_0001_Catchment_0001.dat' and so on for all catchments and timesteps. 
+$ All the program needs to run properly is to have the tecplot formatted cascade 
+$ output files for every timestep (eg. 'topo_tec_0001.dat') in
+$ the 'output/Cascade' directory
+
+$ Specifying user defined basins in a file causes Pecube to open the file and read it.
+$ The file should contain lines with the following syntax:
+
+$ <xpos> <ypos> <age type> <Nil or filename> <yes/Yes or no/No>
+$ Ex: 64.8495 128.5548 1 Nil No
+
+$ Where xpos is the x value of the basin outlet and ypos is the y value.  The age type is a number 1-11 with the
+$ following coding:
+
+$ 1 = Apatite Helium Age - Farley, 2000
+$ 2 = Apatite Helium Age - Small grain size
+$ 3 = Apatite Helium Age - Medium grain size
+$ 4 = Apatite Helium Age - Large grain size
+$ 5 = Apatite Helium Age - Low radiation damage
+$ 6 = Apatite Helium Age - Medium radiation damage
+$ 7 = Apatite Helium Age - High radiation damage
+$ 8 = Apatite Fission Track Age
+$ 9 = Zircon Helium Age
+$ 10 = Zircon Fission Track Age
+$ 11 = Muscovite Age
+
+$ The next entry for each basin line can be 'Nil' or a filename.  If 'Nil' is specified, then Pecube uses
+$ the TAPES-Grid method of finding upstream points of the basin outlet.  Then, it will write out the x, y,
+$ and z positions along with the age data for the upstream points into the main run output directory with
+$ the naming convention of 'Timestep_0001_Basin_X_64.8495_Y_128.5548.dat'.  Also, the PDF for each basin is
+$ written to the folder 'pdf_data' within the run output directory with the naming convention of
+$ 'Timestep_0001_Basin_X_64.8495_Y_128.5548_Agetype_01_pdf.dat'. If a filename is specified as the entry
+$ on the line, then Pecube will open this file and read in each line of data with the format:
+
+$ <age> <error>
+$ Ex: 35.756469 1.07269407
+
+$ Where the age and error are absolute values. The PDF for each of these basins is created in the 'pdf_data'
+$ folder in the run output directory with the naming convention of 'Basin_X_64.8495_Y_128.5548_Agetype_01_pdf.dat'.
+
+$ The final entry on each line is a 'yes' or 'no' on whether the user wants to run the Monte Carlo test for that specified
+$ basin.  For the Monte Carlo test to run properly there must be two basins with the same outlet point (x and y positions) and
+$ EACH must have a 'yes' to run the monte carlo routine. Also, the age types MUST be the same or the Monte Carlo test is not run.
+$ An example of correct syntax for the Monte Carlo routine to run properly is as follows:
+
+$ 64.8495 128.5548 7 Nil Yes
+$ 64.8495 128.5548 7 datafile.txt Yes
+
+$ Please note that if any or all of these criteria for running the Monte Carlo test are not met, then the program simple does not
+$ run the comparison (skips it) and does not output anything for it.
+
+$ Note: The subdirectories in the run output directory where Pecube writes most of these files will be
+$ automatically created by Pecube if they do not exist already.
+
+$pdf_tester_for_data.txt
+0
+
+$ (Input 19) Minimum number of nodes for a catchment to be output
+$ This is a threshold value of nodes that a catchment needs to have in order for an
+$   output file to be written for that catchment at that timestep.
+
+200
+
+$ (Input 20) Name of directory where Cascade tecplot formatted output files are located
+$ to be read in by Pecube for PDF calculation
+$ Note: This only matters if a '1' is selected above (Input 18) for use of Cascade catchments
+$ The program will disregard whatever is here if '0' or a filename is specified
+
+output/Cascade
+
+

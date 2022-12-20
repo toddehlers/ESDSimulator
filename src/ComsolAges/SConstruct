@@ -1,0 +1,66 @@
+# SConstruct build file for scons
+# Version 0.1 (2014.08.20), written by Willi Kappler
+
+import subprocess
+import platform
+
+# Add our own command line option for debug builds
+AddOption("--debug-build", action="store_true", dest="debug_build")
+
+env = Environment(F90PATH = ".")
+
+# Only change environmemt if we do a real build
+if not (GetOption("help") or GetOption("clean")):
+    debug_build = GetOption("debug_build")
+
+    if env["CXX"] == "g++":
+        print "g++ found, setting options..."
+
+        env.Append(CCFLAGS = "-Wall -Wextra -Werror")
+
+        if debug_build:
+            env.Append(CCFLAGS = "-g3")
+        else:
+            env.Append(CCFLAGS = "-O3")
+        print "CCFLAGS: {0:s}".format(env["CCFLAGS"])
+
+    if env["FORTRAN"] == "gfortran":
+        print "gfortran found, setting options..."
+
+        env.Replace(LINK = "gfortran")
+        env.Append(LINKFLAGS = "-fopenmp")
+        env.Append(F90FLAGS = "-Werror -Wall -Warray-bounds -Wunderflow -ffree-line-length-none -fopenmp")
+
+        if debug_build:
+            env.Append(F90FLAGS = "-g3  -fbacktrace -fdump-core -fcheck=all")
+            env.Append(LINKFLAGS = "-g3")
+        else:
+            env.Append(F90FLAGS = "-O3")
+            env.Append(LINKFLAGS = "-O3")
+
+        env.Append(LIBS = "stdc++")
+
+        print "LINK: {0:s}, LINKFLAGS: {1:s}, LIBS: {2:s}".format(env["LINK"], env["LINKFLAGS"], env["LIBS"])
+        print "F90FLAGS: {0:s}".format(env["F90FLAGS"])
+
+    currentSystem = platform.system()
+
+    if currentSystem == "Linux":
+        print "System is Linux"
+    elif currentSystem == "Windows":
+        print "System is Windows"
+    elif currentSystem == "MacOS":
+        print "System is MacOS"
+
+    SetOption('num_jobs', 8)
+
+sourceFiles = [
+    "aft.cc",
+    "ageCalculation.f90",
+    "comsolAges.f90",
+    "fileio.f90",
+    "tridag.f90"
+]
+
+t = env.Program(target='comsolAges', source=sourceFiles)
+Default(t)

@@ -1,0 +1,37 @@
+# call this script with the following line:
+# gnuplot "-e inFile='x_y_z_temp_0000.dat'; outFile='x_y_z_temp_0000.png'" temp_plot.txt
+
+set terminal png size 2048,1024
+
+set xtics 50
+#set mxtics 2
+set xlabel "x [km]"
+
+set x2tics 50
+#set mx2tics 2
+set x2label "x [km]"
+
+set ytics 5
+#set mytics 2
+set ylabel "z [km]"
+
+set y2tics 5
+#set my2tics 2
+set y2label "z [km]"
+
+set xrange [-50:700]
+set yrange [-20:100]
+
+set output outFile
+
+# set color model for color bar
+# set palette rgbformulae 33,13,10
+# set palette rgbformulae 21,22,23
+
+set palette defined ( 0 "black", 1 "blue", 2 "red", 3 "orange" )
+
+set cblabel "temperature [C]"
+set cbrange [0:700]
+
+plot inFile using 3:5:6 notitle palette
+

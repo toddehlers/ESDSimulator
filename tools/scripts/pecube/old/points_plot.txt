@@ -1,0 +1,48 @@
+# time step, point id, x, y, z, temperature
+set terminal png size 2048,1024
+
+set lmargin 10
+set rmargin 10
+
+set xrange [50:600]
+set xtics 50
+set xlabel "x [km]"
+set x2tics 50
+
+# show grid for x and y axis, line style -1 means black color
+set grid linestyle -1
+
+set output "points.png"
+
+set multiplot layout 2,1 title "points moving to the surface"
+
+set yrange [30:70]
+set ytics 5
+set ylabel "z [km]"
+set y2tics 5
+set y2label "z [km]"
+
+plot "./point_7.dat" using 3:4 with linespoint notitle, \
+     "./point_8.dat" using 3:4 with linespoint notitle, \
+     "./point_31.dat" using 3:4 with linespoint notitle, \
+     "./point_50.dat" using 3:4 with linespoint notitle, \
+     "./point_69.dat" using 3:4 with linespoint notitle, \
+     "./point_251.dat" using 3:4 with linespoint notitle, \
+     "./point_469.dat" using 3:4 with linespoint notitle, \
+     "./point_943.dat" using 3:4 with linespoint notitle
+
+set yrange [0:300]
+set ytics 20
+set ylabel "temperature [C]"
+set y2tics 20
+set y2label "temperature [C]"
+
+plot "./point_7.dat" using 3:5 with linespoint notitle, \
+     "./point_8.dat" using 3:5 with linespoint notitle, \
+     "./point_31.dat" using 3:5 with linespoint notitle, \
+     "./point_50.dat" using 3:5 with linespoint notitle, \
+     "./point_69.dat" using 3:5 with linespoint notitle, \
+     "./point_251.dat" using 3:5 with linespoint notitle, \
+     "./point_469.dat" using 3:5 with linespoint notitle, \
+     "./point_943.dat" using 3:5 with linespoint notitle
+

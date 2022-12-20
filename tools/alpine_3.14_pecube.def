@@ -1,0 +1,35 @@
+Bootstrap: localimage
+From: alpine_3.14_pecube_base.sif
+Stage: devel
+
+%post
+    apk upgrade
+
+    # Get source code
+    cd /root/
+    git clone --depth 1 --branch "master" "https://xxx:yyy@esdynamics.geo.uni-tuebingen.de/git/willi/ESDSimulator.git"
+
+    # Compile
+    cd ESDSimulator/src/Pecube_D
+    scons --use-mpi
+
+    ls -l /root/ESDSimulator/src/Pecube_D/pecube
+
+    cp /root/ESDSimulator/src/Pecube_D/pecube /bin/pecube
+
+    rm -rf /root/ESDSimulator
+
+    cat /etc/os-release
+
+%labels
+    Author "Willi Kappler, willi.kappler@uni-tuebingen.de"
+    Version v0.0.1
+
+%help
+    This is a container that downloads and compiles Pecube.
+    After a successfull build the pecube binary is provided via
+    the "singularity run" command.
+
+%runscript
+    /bin/pecube
+

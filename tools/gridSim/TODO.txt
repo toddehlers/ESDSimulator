@@ -1,0 +1,4 @@
+- move run_all_simulations.sh and cpu*.sh to program folder (pecube, child or icecascade)
+- copy output data into a specific folder on local machine
+- test all output on real cluster
+

@@ -1,0 +1,23 @@
+$ ******************************************************************************************
+$ Bivar.in
+$ Input file for bivariate interpolation of cascade irregular mesh onto pecube regular mesh
+$ ******************************************************************************************
+
+$ (Input 1) Output directory to write Pecube and Tecplot formatted files
+
+input/Pecube-D
+
+
+$ (Input 1) Number of points (nx, ny) in the longitude and latitude directions
+
+401 151
+
+
+$ (Input 2) Spacing of longitude and latitude points (in meters)
+
+1000. 1000.
+
+
+$ (Input 3) Geographic location for the origin (bottom left corner) of the topography
+
+0. 0.

@@ -1,0 +1,17 @@
+#!/bin/bash -l
+
+## Run script for pecube monte carlo on esd slurm
+
+## General configuration options
+#SBATCH -J Pecube1
+#SBATCH -e Pecube_e%j
+#SBATCH -o Pecube_o%j
+#SBATCH --mail-user=willi.kappler@uni-tuebingen.de
+#SBATCH --mail-type=ALL
+
+## Machine and CPU configuration
+## Number of tasks per job:
+#SBATCH -n 1
+
+./pecube
+

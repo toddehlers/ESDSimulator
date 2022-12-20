@@ -1,0 +1,3 @@
+awk 'BEGIN{min = 100}; NF == 24 && $16 < min {min = $16}; END{print min}' topo_tec_0000.dat
+awk 'BEGIN{max = -100}; NF == 24 && $16 > max {max = $16}; END{print max}' topo_tec_0000.dat
+

@@ -1,0 +1,41 @@
+.SUFFIXES:.out .o .s .c .F .f .f90 .e .r .y .yr .ye .l .p .sh .csh .h
+
+FCOMP = gfortran
+CCOMP = gcc
+CPPCOMP = g++
+
+
+# Optimization level 3
+PGFLAGS = -c -O3 -march=native -Wall -Werror -Warray-bounds -Wconversion -Wunderflow -Wsurprising -fbacktrace -fdump-core
+CFLAGS = -c -O3 -march=native
+
+# Debug option
+#PGFLAGS = -c -g3 -Wall -Werror -Warray-bounds -Wconversion -Wunderflow -Wsurprising -fbacktrace -fdump-core
+#CFLAGS = -c -g3
+
+OBJECTS = \
+fileio.o \
+tridag.o \
+ageCalculation.o \
+comsolAges.o \
+aft.o
+
+# needed because the make command thinks .mod files are compiled with a MODULA compiler
+%.o : %.mod
+
+.f90.o:
+	$(FCOMP) $(PGFLAGS) $*.f90
+.c.o:
+	$(CCOMP) $(CFLAGS) $*.c
+
+.cc.o:
+	$(CPPCOMP) $(CFLAGS) $*.cc
+
+
+all: comsolAges
+
+comsolAges:	$(OBJECTS) 
+		$(FCOMP)  *.o -lstdc++ -o ../../comsolAges
+
+clean:
+	rm -f *.o *.mod *__genmod.f90 *~

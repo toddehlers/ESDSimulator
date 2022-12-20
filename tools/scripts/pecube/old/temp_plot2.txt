@@ -1,0 +1,31 @@
+set xtics 50
+#set mxtics 2
+set xlabel "x [km]"
+
+set x2tics 50
+#set mx2tics 2
+set x2label "x [km]"
+
+set ytics 5
+#set mytics 2
+set ylabel "z [km]"
+
+set y2tics 5
+#set my2tics 2
+set y2label "z [km]"
+
+set xrange [-50:700]
+set yrange [-20:100]
+
+plot    "./x_y_z_temp_0000.dat" using 3:5 every 1:1:0:0:10:0 notitle linestyle 1, \
+        "./x_y_z_temp_0001.dat" using 3:5 every 1:1:0:0:10:0 notitle linestyle 1, \
+        "./x_y_z_temp_0002.dat" using 3:5 every 1:1:0:0:10:0 notitle linestyle 1, \
+        "./x_y_z_temp_0003.dat" using 3:5 every 1:1:0:0:10:0 notitle linestyle 1, \
+        "./x_y_z_temp_0004.dat" using 3:5 every 1:1:0:0:10:0 notitle linestyle 1, \
+        "./x_y_z_temp_0005.dat" using 3:5 every 1:1:0:0:10:0 notitle linestyle 1, \
+        "./x_y_z_temp_0006.dat" using 3:5 every 1:1:0:0:10:0 notitle linestyle 1, \
+        "./x_y_z_temp_0007.dat" using 3:5 every 1:1:0:0:10:0 notitle linestyle 1, \
+        "./x_y_z_temp_0008.dat" using 3:5 every 1:1:0:0:10:0 notitle linestyle 1
+
+pause 100
+

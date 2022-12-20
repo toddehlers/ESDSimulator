@@ -1,0 +1,37 @@
+Bootstrap: docker
+From: alpine:3.14.6
+Stage: devel
+
+%post
+    apk upgrade
+
+    # Install compilers
+    apk add gcc g++ gfortran
+
+    # Install build tools
+    apk add git scons bash make perl
+
+    # Donwload, compile and install openmpi 3.1
+    cd /root/
+    wget https://download.open-mpi.org/release/open-mpi/v3.1/openmpi-3.1.6.tar.gz
+    tar xfvz openmpi-3.1.6.tar.gz
+    cd openmpi-3.1.6
+    ./configure
+    make
+    make install
+
+    # Clean up
+    cd
+    rm -rf /root/openmpi-3.1.6
+
+    cat /etc/os-release
+
+%labels
+    Author "Willi Kappler, willi.kappler@uni-tuebingen.de"
+    Version v0.0.1
+
+%help
+    This is a base container for Pecube.
+    It contains the version 3.1 of openmpi that is compatible
+    with the version on the ZDV cluster.
+

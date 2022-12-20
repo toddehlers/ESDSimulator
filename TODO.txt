@@ -1,0 +1,46 @@
+Clean up code:
+ - one place for constants (pi, acceleration of gravity, ...)
+ - put global variables into a struct
+ - use globals and configData
+ - use symbols for comparison (<, >, ==, \=, ...)
+ - indent code
+ - remove dead code (= code in comments)
+ - use iostat to check if file is opened
+ - use constants for file units
+ - remove magic constants
+ - remove all gotos
+ - use modules everywhere
+ - use 8 bytes for real numbers (double presicion, real(8)) in fortran and c code
+ - rename memory(x,y) to s.th. more meaningful
+ - remove / replace GPL code
+ - all variables and constants should have at least 4 chars
+ - remove "hacks", like (a/b == b) instead of modulo, etc.
+ - when passing allocated arrays around, always pass size infomation also!!!!
+
+
+
+questions:
+ - nnode is changed at some places, why ?
+ - remaining_time in ice.f90 ?
+
+
+
+bugs:
+ - read_nodal_geometry: pnx and pny are not initialized
+
+
+
+
+ice is not staying (2011.12.20):
+
+iceth (write_tecplot_output.f90, interp_ice.f90)
+htoc (ICE.f90)
+h_tmp (ICE.f90)
+hforice (ICE.f90)
+
+
+awk 'BEGIN {i=0} /ICE.f90: temperature/ {print i, $3;i++}' output_2011_12_19.txt > temp_out_2011_12_20.txt
+
+awk 'BEGIN {i=0} /Ice thickness/ {print i, $4;i++}' output_2011_12_19.txt > ice_out_2011_12_20.txt
+
+

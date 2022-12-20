@@ -1,0 +1,10 @@
+10.0
+5
+10
+1.0
+50.0 topo2_grid_0.dat
+25.0 topo2_grid_10.dat
+12.56 topo2_grid_20.dat
+7.1 topo2_grid_30.dat
+1.8 topo2_grid_40.dat
+0.0 topo2_grid_50.dat
