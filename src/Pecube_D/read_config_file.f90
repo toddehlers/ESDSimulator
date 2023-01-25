@@ -1059,6 +1059,9 @@ module m_read_config_file
         call log_message("RDAAM_ppm_Th: " + config%RDAAM_ppm_Th)
         call log_message("RDAAM_ppm_U: " + config%RDAAM_ppm_U)
 
+        call log_message("use ocean temperature: " + config%use_ocean_temperature)
+        call log_message("ocean temperature value: " + config%ocean_temperature_value)
+
         return
 
         ! TODO
