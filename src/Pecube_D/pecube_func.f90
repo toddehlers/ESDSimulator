@@ -167,7 +167,7 @@ module m_pecube_func
       real(8) :: intrusion_start, intrusion_end, intrusion_temperature
       real(8) :: prev_intrusion_start, prev_intrusion_end, prev_intrusion_temperature
       real(8) :: temperature_hold_period, actual_time, maybe_hold_period
-      real(8) :: gradient1, gradient2, node_zpos
+      real(8) :: gradient1, gradient2, node_zpos1
 
       real(8), dimension(:), allocatable :: surf_longitude, surf_latitude
 
@@ -1231,34 +1231,43 @@ surf_latitude = 0.0
 !  K.W. Weathers, M.M. Zweng (2018). World Ocean Database 2018. A. V. Mishonov, Technical Editor, NOAA Atlas NESDIS 87.) 
 !  Schlitzer, R., Electronic Atlas of WOCE Hydrographic and Tracer Data Now Available, Eos Trans. AGU, 81(5), 45, 2000
 
-        debug_once = .true.
+        gradient2 = (tmsl - config%ocean_temperature_value) / 2.0 ! Ocean height is 2.0 km
+
+        call log_message("tmsl: " + tmsl)
+        call log_message("tmax: " + tmax)
+        call log_message("tlapse: " + tlapse)
+        call log_message("zl: " + zl)
+        call log_message("gradient2: " + gradient2)
 
         do i = 1, nsurf
+            debug_once = .true.
             tsurf = tmsl - (zsurf(i) * tlapse)
             zh = zl + zsurf(i)
             gradient1 = (tmax - tsurf) / zh
             do k = 1, nz
               node_in = (i - 1) * nz + k
-              node_zpos = zh - zp(node_in)
+              node_zpos1 = zh - zp(node_in)
 
               if (config%use_ocean_temperature) then
-                  if (node_zpos < 0.0) then
-                      tp(node_in) = 2.0 ! Temperature below model
-                  else if (node_zpos <= zsurf(i)) then
-                      tp(node_in) = tsurf + (node_zpos * gradient1)
+                  if (zsurf(i) > 2.0) then
+                      tp(node_in) = tsurf + (node_zpos1 * gradient1)
+                  else if (zsurf(i) < 0.0) then
+                      tp(node_in) = 2.0 ! Fixed temperature at ocean ground
                   else
-                      gradient2 = (tmsl - config%ocean_temperature_value) / 2.0 ! Height is 2.0 km
-                      tp(node_in) = node_zpos * gradient2
+                      tp(node_in) = (zsurf(i) * gradient2) + config%ocean_temperature_value
 
                       if (debug_once) then
                           debug_once = .false.
-                          call log_message("ocean temperature, gradient2: " + gradient2)
-                          call log_message("node_zpos: " + node_zpos)
+                          call log_message("tsurf: " + tsurf)
+                          call log_message("zh: " + zh)
+                          call log_message("zsurf(i)" + zsurf(i))
+                          call log_message("gradient1: " + gradient1)
+                          call log_message("node_zpos1: " + node_zpos1)
                           call log_message("zp(node_in): " + zp(node_in))
                       endif
                   endif
               else
-                  tp(node_in) = tsurf + (node_zpos * gradient1)
+                  tp(node_in) = tsurf + (node_zpos1 * gradient1)
               endif
             enddo
         enddo
