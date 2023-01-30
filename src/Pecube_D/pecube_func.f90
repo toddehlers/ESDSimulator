@@ -167,7 +167,7 @@ module m_pecube_func
       real(8) :: intrusion_start, intrusion_end, intrusion_temperature
       real(8) :: prev_intrusion_start, prev_intrusion_end, prev_intrusion_temperature
       real(8) :: temperature_hold_period, actual_time, maybe_hold_period
-      real(8) :: gradient1, gradient2, node_zpos1
+      real(8) :: gradient1, gradient2, node_zpos1, ocean_height
 
       real(8), dimension(:), allocatable :: surf_longitude, surf_latitude
 
@@ -1231,7 +1231,8 @@ surf_latitude = 0.0
 !  K.W. Weathers, M.M. Zweng (2018). World Ocean Database 2018. A. V. Mishonov, Technical Editor, NOAA Atlas NESDIS 87.) 
 !  Schlitzer, R., Electronic Atlas of WOCE Hydrographic and Tracer Data Now Available, Eos Trans. AGU, 81(5), 45, 2000
 
-        gradient2 = (tmsl - config%ocean_temperature_value) / 2.0 ! Ocean height is 2.0 km
+        ocean_height = 2.0 ! Ocean height is 2.0 km
+        gradient2 = (tmsl - config%ocean_temperature_value) / ocean_height
 
         call log_message("tmsl: " + tmsl)
         call log_message("tmax: " + tmax)
@@ -1249,7 +1250,7 @@ surf_latitude = 0.0
               node_zpos1 = zh - zp(node_in)
 
               if (config%use_ocean_temperature) then
-                  if (zsurf(i) > 2.0) then
+                  if (zsurf(i) > ocean_height) then
                       tp(node_in) = tsurf + (node_zpos1 * gradient1)
                   else if (zsurf(i) < 0.0) then
                       tp(node_in) = 2.0 ! Fixed temperature at ocean ground
@@ -1259,11 +1260,8 @@ surf_latitude = 0.0
                       if (debug_once) then
                           debug_once = .false.
                           call log_message("tsurf: " + tsurf)
-                          call log_message("zh: " + zh)
-                          call log_message("zsurf(i)" + zsurf(i))
-                          call log_message("gradient1: " + gradient1)
-                          call log_message("node_zpos1: " + node_zpos1)
-                          call log_message("zp(node_in): " + zp(node_in))
+                          call log_message("zsurf(i): " + zsurf(i))
+                          call log_message("tp(node_in): " + tp(node_in))
                       endif
                   endif
               else
