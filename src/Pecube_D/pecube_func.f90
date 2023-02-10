@@ -147,7 +147,7 @@ module m_pecube_func
 
 
 
-      logical :: has_dynamic_thermal_conductivity, file_exists, debug_once
+      logical :: has_dynamic_thermal_conductivity, file_exists
 
       real(8) :: swap_z, ftime
       real(8) :: vx_min, vy_min, vz_min
@@ -1231,49 +1231,21 @@ surf_latitude = 0.0
 !  K.W. Weathers, M.M. Zweng (2018). World Ocean Database 2018. A. V. Mishonov, Technical Editor, NOAA Atlas NESDIS 87.) 
 !  Schlitzer, R., Electronic Atlas of WOCE Hydrographic and Tracer Data Now Available, Eos Trans. AGU, 81(5), 45, 2000
 
-        ocean_height = 2.0 ! Ocean height is 2.0 km
-        gradient2 = (tmsl - config%ocean_temperature_value) / ocean_height
-
-        call log_message("tmsl: " + tmsl)
-        call log_message("tmax: " + tmax)
-        call log_message("tlapse: " + tlapse)
-        call log_message("zl: " + zl)
-        call log_message("gradient2: " + gradient2)
-
         do i = 1, nsurf
-            debug_once = .true.
             tsurf = tmsl - (zsurf(i) * tlapse)
             zh = zl + zsurf(i)
             gradient1 = (tmax - tsurf) / zh
             do k = 1, nz
               node_in = (i - 1) * nz + k
               node_zpos1 = zh - zp(node_in)
-
-              if (config%use_ocean_temperature) then
-                  if (zsurf(i) > ocean_height) then
-                      tp(node_in) = tsurf + (node_zpos1 * gradient1)
-                  else if (zsurf(i) < 0.0) then
-                      tp(node_in) = 2.0 ! Fixed temperature at ocean ground
-                  else
-                      tp(node_in) = (zsurf(i) * gradient2) + config%ocean_temperature_value
-
-                      if (debug_once) then
-                          debug_once = .false.
-                          call log_message("tsurf: " + tsurf)
-                          call log_message("zsurf(i): " + zsurf(i))
-                          call log_message("tp(node_in): " + tp(node_in))
-                      endif
-                  endif
-              else
-                  tp(node_in) = tsurf + (node_zpos1 * gradient1)
-              endif
+              tp(node_in) = tsurf + (node_zpos1 * gradient1)
             enddo
         enddo
 
           t = tp
         endif ! istep == 0
 
-        ! WK, 2019.04.29: load temperature filed from file and use it
+        ! WK, 2019.04.29: load temperature field from file and use it
         if (temperature_file(1:3) /= "Nil") then
           call load_temperatures(nnode, xp, yp, zp, tp, temperature_file)
           t = tp
@@ -1647,8 +1619,19 @@ surf_latitude = 0.0
          endif
       endif
 
+! WK: Ocean temperature:
+    if (config%use_ocean_temperature) then
+        ocean_height = 2.0 ! Ocean height is 2.0 km
+        gradient2 = (tmsl - config%ocean_temperature_value) / ocean_height
+        call log_message("gradient2: " + gradient2)
 
-
+        do i = 1, nnode
+            zh = z(i) - zl
+            if (zh >= -ocean_height .and. zh <= 0.0) then
+                t(i) = (zh * gradient2) + config%ocean_temperature_value 
+            endif
+        enddo
+    endif
 
 
 ! interpolate result onto undeformed mesh
