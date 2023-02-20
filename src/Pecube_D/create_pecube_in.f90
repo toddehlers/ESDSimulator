@@ -23,7 +23,7 @@ module m_create_pecube_in
       real,dimension(:),allocatable::Pe2
       real,dimension(:),allocatable::theta,phi,mft_ratein,mbt_ratein,mct_ratein,stf_ratein,thermflag
       integer,dimension(:),allocatable::nfnme,age_flags,nobsfile
-      real,dimension(:),allocatable::zmin,zmax
+      real,dimension(:),allocatable::zmin
       real*8,dimension(:),allocatable :: age_obs,dage_obs
       character,dimension(:),allocatable::fnme*300,obsfile*300
       real*4 dummy1,dummy2,dummy3,dummy4,dummy5,dummy6,dummy7
@@ -616,15 +616,6 @@ module m_create_pecube_in
         enddo
       enddo
 
-! Modified for multiple topography inputs on 2/7/2007 by cspath
-      allocate(zmin(nstep+1),zmax(nstep+1))
-      do k=1,nstep+1
-        zmin(k)=minval(z(k,:))
-        zmax(k)=maxval(z(k,:))
-        call log_message("step: " + k + ", minz: " + zmin(k) + ", maxz: " + zmax(k))
-      enddo
-
-
 ! Calculates xl,yl based on coordinate flag (1=Degrees, 2=UTM) (added by cspath)
       if (coordflag .eq. 1) then
           xl=dx*(nx-1)*nskip*111.11*cos((xlat+dy*ny0/2.)*3.141592654/180.)
@@ -635,6 +626,12 @@ module m_create_pecube_in
       else
           call log_message('Coordinate flag is set to an invalid value')
       endif
+
+      do k=1,nstep+1
+        zmin(k)=minval(z(k,:))
+      enddo
+
+      call log_message("before correction: minz: " + minval(z) + ", maxz: " + maxval(z))
 
       zl=crustal_thickness/1.e3
 
@@ -679,11 +676,6 @@ module m_create_pecube_in
             y2f(istep)=y2f(istep)-xlat
         enddo
       endif
-
-! Modified for multiple topography inputs on 2/7/2007 by cspath
-      do k=1,nstep+1
-          zmax(k)=maxval(z(k,:))
-      enddo
 
       open (7, file = trim(config%output_folder) // "/Pecube.dat", status = "unknown")
       !open (7,status='scratch')
@@ -738,11 +730,6 @@ module m_create_pecube_in
             write (7,*) icon1,icon2,icon3,icon4
           enddo
         enddo
-
-! Modified for multiple topography inputs on 2/7/2007 by cspath
-      do k=1,num_topo_files
-        zmax(k)=maxval(z(k,:))
-      enddo
 
 ! Modified for multiple topography inputs on 2/7/2007 by cspath
 ! Writes all time step information to scratch file to be read by Pecube.f90
@@ -883,7 +870,7 @@ module m_create_pecube_in
 
       close(7)
 
-      deallocate (zNZ,z,zoff,zmin,zmax)
+      deallocate (zNZ,z,zoff,zmin)
       deallocate (timek,Peclet,topomag,topooffset)
       deallocate (x1f,x2f,y1f,y2f,def,dif)
       deallocate (geoflag,theta,phi,mft_ratein,mbt_ratein,mct_ratein,stf_ratein,thermflag)
