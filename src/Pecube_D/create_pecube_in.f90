@@ -562,7 +562,7 @@ module m_create_pecube_in
                 ! import_2d_move_topography.f90
                 call fileImport(k, zNZ, nx0, ny0, dx, xlon)
 
-                call log_message("2D move topography, min(z): " + minval(zNZ) + "m, max(z): " + maxval(z) + "m")
+                call log_message("2D move topography, min(z): " + minval(zNZ) + "m, max(z): " + maxval(zNZ) + "m")
 
                 close (45)
             else ! just copy the vales from the last time step
