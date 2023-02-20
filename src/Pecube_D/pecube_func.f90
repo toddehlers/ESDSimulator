@@ -616,12 +616,17 @@ surf_latitude = 0.0
       !   endif
       ! enddo
 
+
+      zmin = minval(zsurf)
+      zmax = maxval(zsurf)
+      call log_message("zmin: " + zmin + ", zmax: " + zmax)
+
 ! Calculate proper z-node spacing if nz is zero
 ! cspath and dwhipp 11/07
       if (nzin == 0) then                                                     ! If number of input z levels is zero, then code will calculate nz and spacing
-        zmin       = minval(zsurf)                                            !   of z levels.  z levels will be spaced 1: 1 with the input x and y spacing
+                                                                              !   of z levels.  z levels will be spaced 1: 1 with the input x and y spacing
         zmin_orig  = zmin                                                     !   down to ~5 km below the model surface, 3:     1 down to ~15 km below the surface
-        zmax       = maxval(zsurf)                                            !   and ~9:                                  1 for the rest of the model.
+                                                                              !   and ~9:                                  1 for the rest of the model.
         xy_mean    = (xstep+ystep)/2                                          ! This first portion of the variable z spacing code determines the number of
         cur_depth  = zmin+zl                                                  !   z levels for the new geometry.
         nz         = 1
@@ -654,7 +659,6 @@ surf_latitude = 0.0
         stop
       endif ! nzin
 
-    !call log_message("zmin: " + zmin + ", zmax: " + zmax)
 
 ! Stores the thermal flag values into array to be used to determine
 ! what thermal histories to write out at the end
