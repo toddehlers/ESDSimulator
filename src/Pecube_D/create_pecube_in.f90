@@ -562,6 +562,8 @@ module m_create_pecube_in
                 ! import_2d_move_topography.f90
                 call fileImport(k, zNZ, nx0, ny0, dx, xlon)
 
+                call log_message("2D move topography, min(z): " + minval(zNZ) + "m, max(z): " + maxval(z) + "m")
+
                 close (45)
             else ! just copy the vales from the last time step
                 do m = 1, ny0
@@ -619,6 +621,7 @@ module m_create_pecube_in
       do k=1,nstep+1
         zmin(k)=minval(z(k,:))
         zmax(k)=maxval(z(k,:))
+        call log_message("step: " + k + ", minz: " + zmin(k) + ", maxz: " + zmax(k))
       enddo
 
 
@@ -649,6 +652,9 @@ module m_create_pecube_in
         ! enddo
 
       enddo
+
+      call log_message("after correction: minz: " + minval(z) + ", maxz: " + maxval(z))
+
     !call log_message('z2:' + z(1,1))
 
       ! Commented out because this was leading to incorrect heat
