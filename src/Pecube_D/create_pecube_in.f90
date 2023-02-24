@@ -23,7 +23,6 @@ module m_create_pecube_in
       real,dimension(:),allocatable::Pe2
       real,dimension(:),allocatable::theta,phi,mft_ratein,mbt_ratein,mct_ratein,stf_ratein,thermflag
       integer,dimension(:),allocatable::nfnme,age_flags,nobsfile
-      real,dimension(:),allocatable::zmin
       real*8,dimension(:),allocatable :: age_obs,dage_obs
       character,dimension(:),allocatable::fnme*300,obsfile*300
       real*4 dummy1,dummy2,dummy3,dummy4,dummy5,dummy6,dummy7
@@ -627,28 +626,11 @@ module m_create_pecube_in
           call log_message('Coordinate flag is set to an invalid value')
       endif
 
-      do k=1,nstep+1
-        zmin(k)=minval(z(k,:))
-      enddo
-
       call log_message("before correction: minz: " + minval(z) + ", maxz: " + maxval(z))
 
       zl=crustal_thickness/1.e3
-
-! Modified for multiple topography inputs on 2/7/2007 by cspath
-    !call log_message('z1:' + z(1,1))
-      do k=1,nstep+1
-        z(k,:)=(z(k,:)-zmin(k))/crustal_thickness*zl
-
-        ! do j = 1, nx*ny
-        !   if (z(k,j) /= z(k,j)) then
-        !     call log_message("create_pecube_in.f90,  z(k,j) is Nan, k: " + k + ", j: " + j)
-        !     call log_message("zmin(k): " + zmin(k) + ", crustal_thickness: " + crustal_thickness + ", zl: " + zl)
-        !     stop
-        !   endif
-        ! enddo
-
-      enddo
+      ! Convert from m to km
+      z = z / 1000.0
 
       call log_message("after correction: minz: " + minval(z) + ", maxz: " + maxval(z))
 
@@ -870,7 +852,7 @@ module m_create_pecube_in
 
       close(7)
 
-      deallocate (zNZ,z,zoff,zmin)
+      deallocate (zNZ,z,zoff)
       deallocate (timek,Peclet,topomag,topooffset)
       deallocate (x1f,x2f,y1f,y2f,def,dif)
       deallocate (geoflag,theta,phi,mft_ratein,mbt_ratein,mct_ratein,stf_ratein,thermflag)
