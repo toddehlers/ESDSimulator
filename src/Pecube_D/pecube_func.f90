@@ -1632,7 +1632,13 @@ surf_latitude = 0.0
         do i = 1, nnode
             zh = z(i) - zl
             if (zh >= -ocean_height .and. zh <= 0.0) then
-                t(i) = (zh * gradient2) + config%ocean_temperature_value 
+                ! Index of surface node
+                j = ((i - 1) / nz) + 1
+                if (zsurf(j) >= -ocean_height .and. zsurf(j) <= 0.0) then
+                  if (zh >= zsurf(j)) then
+                    t(i) = (zh * gradient2) + config%ocean_temperature_value 
+                  endif
+                endif
             endif
         enddo
     endif
