@@ -319,6 +319,7 @@
 
             real(8) :: dhmaxglac, dtold, hmax, hmedian, hmin, oro_time, shorttime, meshtime, tcheck, temperature
             real(8) :: time, delta, dhmaxfluv, dhminfluv, dhminglac, GLOBAL_C, GLOBAL_CS
+            real(8) :: imposed_oro_time ! Edited vmbp
             real(8) :: diffusivity, dtdzb, dhmaxdiff, dhmindiff, dtmin, dtmax
 
         end module cascade_globals

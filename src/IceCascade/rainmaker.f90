@@ -196,8 +196,9 @@
 ! background rate and (sorry) go to bottom of routine.
 
 !      print *,'Number of nodes according to rainmaker.f',nnode
-
-      if (configData%iflag_uni) then
+        ! changed from iflag_uni
+        ! Victoria M Buford Parks   Jan 2020
+      if (configData%iflag_precip.eq.1) then
          do i = 1,configData%nnode
 !            print *,'i = ',i
 !            print *,'nnode = ',nnode
@@ -209,9 +210,10 @@
          goto 100
       endif
 
-
-! if update of precip on regular grid required
-      if (configData%iflag_oro) then
+      ! changed from iflag_oro
+        ! Victoria M Buford Parks   Jan 2020
+            ! This module is only called if update of precip on regular grid required
+      if (configData%iflag_precip.eq.2) then
 
 ! define regular grid.
       do i  = 1,nxs
@@ -320,8 +322,10 @@
 
       return 
       end subroutine
-
+      
+!----------------------------------------------------------------
       subroutine grid2(nnode,x,y,h,x_gr,y_gr,nxs,nys,z)
+!----------------------------------------------------------------
       implicit none
 !     inputs: 
 !             nnode     number of nodes 

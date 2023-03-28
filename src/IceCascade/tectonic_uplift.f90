@@ -37,9 +37,10 @@
 
 !      real     dij
 
-                type(config) :: configData
-                integer(4) :: inode
-                real(8) :: dh
+  type(config) :: configData
+  integer(4) :: inode
+  real(8) :: dh
+
 
 
 
@@ -50,15 +51,15 @@
 ! commented out 6/15/1, now in initialize_general_parameters.f
 !      uplift_rate=2.E-3
 
-          do inode=1,configData%nnode
+  do inode=1,configData%nnode
 
 ! uplift the topography keeping the boundary pinned
-           if (memory(inode, 5) > 0.5_8) then
+    if (memory(inode, 5) > 0.5_8) then
 
-            dh=configData%uplift_rate*global_cascade_dt*shelf(inode)
+      dh=configData%uplift_rate*global_cascade_dt*shelf(inode)
 
 ! uplift interior 
-            h(inode) = h(inode) + (dh*shelf(inode))
+      h(inode) = h(inode) + (dh*shelf(inode))
 !        if (shelf(inode) > 0.0 ) then
 !            print *, "h(inode), dh, uplift_rate, dt, shelf: ", &
 !            h(inode), dh, configData%uplift_rate, global_cascade_dt, shelf(inode)
@@ -84,20 +85,30 @@
 !      if (dij.lt.10.) then
 !       h(inode)=h(inode)+dh
 !      endif
-      
-           else
-                dh = 0.0_8
-           endif
+    ! Moved to it's own module
+    ! ! Elseif condition Added by Victoria M Buford Parks Jan 2020
+    ! ! For nodes that are at the rear boundary (eg y=200)
+    ! elseif (y(inode).eq.configData%sidey) then
+    !   if (h(inode).lt.configData%imposeRearBoundaryUpliftMaxElevation) then
+    !     dh = configData%imposeRearBoundaryUpliftRate / 1e6_8 * global_cascade_dt
+    !     h(inode)=h(inode)+dh
+    !   endif
+
+    ! ! Return to original code VMBP Jan 2020  
+    else
+        dh = 0.0_8
+    endif
+
 ! do not touch the following lines
 ! they update h0, hi and calculate the influx of material into the
 ! landscape
-            h0(inode)=h0(inode)+(dh)
-            hi(inode)=hi(inode)+(dh)
-            influx=influx+dh*memory(inode,7)
+    h0(inode)=h0(inode)+(dh)
+    hi(inode)=hi(inode)+(dh)
+    influx=influx+dh*memory(inode,7)
 
-           enddo
+    enddo
 
-          return
-          end subroutine tectonic_uplift
-        end module m_tectonic_uplift
+  return
+  end subroutine tectonic_uplift
+end module m_tectonic_uplift
 

@@ -109,9 +109,11 @@ del_flip.o \
 tectonic_movement.o \
 update_bedrock.o \
 update_time_step.o \
+UpdateBoundaryNodes.o \
 write_tecplot_output.o \
 write_output.o \
 rainmaker.o \
+rainmaker_imposed.o \
 landslide.o \
 landslide_simple.o \
 find_dslope.o \

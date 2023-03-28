@@ -43,6 +43,10 @@ contains
             do i = 1,Lines
                 read(55, *, iostat=ios) x_MOVE(i), y_MOVE(i), z_MOVE(i), MOVE_ID(i)
                 if (ios/=0) exit
+                ! Performing y-flip switch for orographic precipitation to work properly
+					if (configData%y_flip) then
+						x_MOVE(i) = configData%sidey - x_MOVE(i)
+					end if
             end do
         close(55)     
 
