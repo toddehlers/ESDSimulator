@@ -7,7 +7,7 @@ Stage: devel
 
     # Get source code
     cd /root/
-    git clone --depth 1 --branch "master" "git@github.com:toddehlers/ESDSimulator.git"
+    git clone --depth 1 --branch "main" "https://github.com/toddehlers/ESDSimulator.git"
 
     # Compile
     cd ESDSimulator/src/Pecube_D
@@ -29,6 +29,8 @@ Stage: devel
     This is a container that downloads and compiles Pecube.
     After a successfull build the pecube binary is provided via
     the "singularity run" command.
+    To build it use this command:
+        sudo singularity build alpine_3.14_pecube.sif alpine_3.14_pecube.def
 
 %runscript
     /bin/pecube
