@@ -34,4 +34,6 @@ Stage: devel
     This is a base container for Pecube.
     It contains the version 3.1 of openmpi that is compatible
     with the version on the ZDV cluster.
+    To build it use this command:
+        sudo singularitsy build alpine_3.14_pecube_base.sif alpine_3.14_pecube_base.def
 
