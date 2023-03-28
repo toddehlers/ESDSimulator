@@ -1,30 +1,34 @@
 $ *********************************************************************************
-$ *** Pecube-D
-$ *****
+$ *** Pecube-D   Thermokinematic and erosion modeling software version from the
+$ ***            work group of Todd Ehlers and collaborators.
+$ *********************************************************************************
 $
-$ Input file for running Pecube-D.  University of Tuebingen, Germany (18 May, 2015).
-$ Report bugs noticed with this version to Todd Ehlers (todd.ehlers@uni-tuebingen.de).
+$ Example Input file for running Pecube-D.  
+$ University of Glasgow, UK (28 March, 2023); University of Tuebingen, Germany, and University of 
+$ Michigan, USA.
 $
-$ This version of Pecube is based on the distrubtion by Jean Braun.  It has been
-$ Modified substatially to account for
+$ Report bugs noticed with this version to Todd Ehlers (todd.ehlers@glasgow.ac.uk).
+$
+$ This version of Pecube is based on the initial distrubtion by Jean Braun.  It has been
+$ heavily modified substatially to account for
 $ a.  Calculation of predicted ages for different thermo- geochronometer systems.
 $ b.  Many different options for user defined velocity input fields (e.g. McQuarrie and
-$     Ehlers, 2015).
+$     Ehlers, 2015) including input from the Move palinspastic restoriation software.
 $ c.  Different output format options.
 $ d.  calculation of detrital cooling ages for user defined sample points on the topog.
 $      (e.g. Whipp et al., 2009)
 $ e.  Iterative Inversion of cooling ages for topographic change scenarios (e.g. Olen et al. 2012)
 $ f.  Monte Carlo Inversion of cooling ages to identify the denudation histories that
 $     that can produce observed ages.  (e.g. Thiede & Ehlers, 2013)
-$ g.  Coupling with CASCADE or IceCascade (e.g Yanites and Ehlers, 2013 EPSL)
+$ g.  Coupling with the Ehlers work group version of IceCascade (e.g Yanites and Ehlers, 2013 EPSL)
 $ and numerous other significant changes to age prediction, heat production, shear
 $ heating, kinematics, and thermal history output
 $ are highlighted in the readme folders in  /docs folder. Different options have also been added
 $ for simulation other kinematic fields including an ellipsoidal exhumation field, as well as
-$ a coupling to 2D Move restoration files. Note - use of the 2D Move output for velocity fields
-$ also requires the program velocity.py.
+$ a coupling to the Move software restoration files. Note - use of the Move output for velocity fields
+$ is integrated in to this version of Pecube-D.
 $
-$ Significant program changes have been made to this version with thanks to Willi Kappler,
+$ Significant program changes have been made to this Ehlers work group version with thanks to Willi Kappler,
 $ David Whipp, and Chris Spath.  If you use this program for publications the references that
 $ describe the methods used are:.
 $
@@ -38,12 +42,12 @@ $
 $ Reference to use concerning program changes made by T. Ehlers group:
 $
 $ Olen, S., Ehlers, T.A., Densmore, M.S., 2012, Limits to reconstructing paleotopography
-$ from ther- mochronometer data, J. Geophysical Res – Earth Surface, v. 117,
+$ from ther- mochronometer data, J. Geophysical Res ??? Earth Surface, v. 117,
 $ doi:10.1029/2011/ JF001985
 $
 $ Whipp, D.M. Jr., Ehlers, T.A., Braun, J., Spath, C.D., 2009, Effects of exhumation
 $ kinematics and topo- graphic evolution on detrital thermochronometer data,
-$ J. Geophysical Res. – Earth Surface, V. 114, F04021, doi:10.1029/2008JF001195.
+$ J. Geophysical Res. ??? Earth Surface, V. 114, F04021, doi:10.1029/2008JF001195.
 $
 $ Thiede, R.C., Ehlers, T.A., 2013, Large spatial and temporal variations in Himalayan
 $ denudation, Earth and Planetary Science Letters, 371-372, pp. 278-293.
@@ -51,19 +55,29 @@ $
 $ McQuarrie, N., and Ehlers, T.A., 2015 Influence of thrust belt geometry
 $ and shortening rate on thermochronometer cooling ages: Insights from the
 $ Bhutan Himalaya, Tectonics. 34, doi:10.1002/2014TC003783.
+$ 
 $ Related programs to this distribution:
-$       * Bivar - this program takes topography output from cascade and Ice and formats them for input
+$   * Bivar - this program takes topography output from cascade and Ice and formats them for input
 $       into Pecube-D
-$   * Cascade and Ice (Univ. Tuebingen modified versions, see Yanites and Ehlers, 2012 In review).
+$   * Cascade and Ice (Univ. Tuebingen modified versions, see Yanites and Ehlers, 2012 EPSL).
 $       These programs can be run prior to
 $       to Pecube-D to provide input topographies.
-$       * velocity.py - used to take 2D Move output and create transient velocity fields
+$    
 $
 $ NOTE - not all of the above files may be in this distribution.  We're in the process of
 $ assembling a more complete distribution.
 $
 $ You can add as many comment lines as you wish as long as they start with a
 $ dollar sign
+$
+$ *** HOW TO COMPILE THIS VERSION OF PECUBE-D ***
+$ This version of Pecube-D is setup to compile using the scons software (instead of make) in Ubuntu linux.
+$ As of 2023.03.28 this version compiles successfully using the following compilers:
+$      gcc: 9.4.0
+$      g++: 9.4.0
+$      gfortran: 9.4.0
+$      scons: 3.1.2
+$      openmpi: 4.0.3
 $
 $ *** HOW TO RUN / EXECUTE THIS PROGRAM ***
 $ This version of Pecube is compiled with MPI so that it can run on multicore machines.  This is not
@@ -86,12 +100,26 @@ $ Where -n is the number of cores you want to use.  If you are only running 1 jo
 $ difference if N=1 or N=8.  So, for 1 job, you write
 $ mpirun -n 1 pecube.
 $
+$ *** DO YOU PREFER TO USE CONTAINERS? ****
+$
+$ The Ehlers 2023 GFZ data publication associated with this release also includes a container of this version 
+$ of the code.  Some users may prefer to use containers instead of compiling the program themselves. If this 
+$ interests you, please see the related readme_containers.txt file. We currently use the singularity software
+$ for containers.
+$
+$ IMPORTANT - SOFTWARE UPDATES:  
+$ Updates to this version of code can be found on GitHub at:
+$
+$      https://github.com/toddehlers/ESDSimulator/tree/main/src/Pecube_D
+$
+$ We are periodically making improvements to the code and it is recommended serious users download the GitHub
+$ version at the above link.
 $ *********************************************************************************
 
 
 $ Set mode of pecube operation
 $ Valid options:
-$ normal_mode: use this option if you just want to run pecube once
+$ normal_mode: use this option if you just want to run 3D pecube simulation once
 $ error_iteration: use this option if you want to run a sequence of pecube simulation
 $       one after the other, in order to optimize the erosion rates iteravely
 $ monte_carlo: use this option if you want to run thousands of pecube simulation
@@ -99,10 +127,21 @@ $       (some of them in parallel) in roder to optimize erosion rates using
 $       monte carlo randomisazion
 pecube_run_mode: normal_mode
 
+$ If run mode is error iteration:
+$
+$ Maximum number of error iteration
+error_iter_limit: 15
+
+$ Error tolerance to exit iteration before limit is reached
+$ error_iter_tolerance: 1.0
+
+$ Flag wether observables should be created from pecube or not
+$ This is currently not working
+$ error_iter_create_observables: off
 
 $ If run mode is monte carlo:
 $
-$ The maximum value for the randomized erosion rates
+$ The maximum value for the randomized erosion rates (mm/yr)
 mc_max_erosion_rate: 4.0
 
 $ The total number of simulations
@@ -117,6 +156,17 @@ mc_check_min_threshold: on
 
 $ The actual minimum threshold value
 mc_min_threshold_factor: 0.20
+
+$ This factor sets the scale factor for the jitter that is added to
+$ each erosion rate values in order to randomize them
+$ Lower values means less jitter and higher chance to get stuck in
+$ a local minimum
+$ Higher values means more jitter and higher chance to miss an optimal value
+$ but also avoids to get stuck in a local minimum
+$ Useful ranges: 0.01 to 0.1
+$ If this value is set to >= 1.0, then evolutionary / genetic algorithm is disabled
+$mc_random_jitter_factor: 0.01
+mc_random_jitter_factor: 0.05
 
 $ The input file containing the ages and errors
 $ This must be a text file with semicolon separated columns
@@ -144,6 +194,9 @@ use_ocean_temperature: off
 $ Default value is 2.0 deg. C at -2.0 km (below sea level)
 ocean_temperature_value: 2.0
 
+
+$ Export time temperature history for surface points
+export_surface_history: on
 
 $ IMPORTANT: This marks the end of the pecube mode configuration
 pecube_end_run_mode
