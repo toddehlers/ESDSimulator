@@ -79,8 +79,18 @@
                 ! Enable orographic precipitation
                 ! If iflag_oro = F, the iflag_uni is set to T (uniform precipitation)
                 !   INPUT A9
-                logical :: iflag_oro
-                logical :: iflag_uni
+                ! Edited by vmbp Jan 13, 2020
+                ! logical :: iflag_oro
+                ! logical :: iflag_uni
+                integer(4):: iflag_precip
+
+                ! File name
+                ! INPUT A9b
+                character(255) :: precipname
+
+                !# INPUT A9C *** Update time for imposed precipitation in years
+                !# Added by vmbp, Jan 13 2020
+                real(8) :: imposedPrecipUpdateTime !Edited vmbp
 
                 ! Higher-Order Ice Physics Switch (using COMSOL)
                 ! .FALSE. = just use update_height from BY (modified SIA)
@@ -235,6 +245,14 @@
                 integer(4) :: nxe
                 integer(4) :: nye
 
+                !# INPUT D10: impose uplift at rear boundary 
+                !# If you want to T/F
+                !# Uplift rate [mm/yr]
+                !# Max elevation to obtain [km]
+                ! Added by Victoria M Buford Parks Jan 2020
+                logical :: imposeRearBoundaryUplift
+                real(8) :: imposeRearBoundaryUpliftRate
+                real(8) :: imposeRearBoundaryUpliftMaxElevation
 
                 ! EROSION: FLUVIAL
                 ! INPUT E
@@ -826,10 +844,16 @@
                     
                     call readInteger(configData%ihorizontal_mode)
 
-                    call readLogical(configData%iflag_oro)
-                    configData%iflag_uni = .not.configData%iflag_oro
+                    call readInteger(configData%iflag_precip)
+                    !call readLogical(configData%iflag_oro)
+                    !configData%iflag_uni = .not.configData%iflag_oro
+                    call readString(configData%precipname)
+
+                    call readReal(configData%imposedPrecipUpdateTime) !Edited vmbp
 
                     call readLogical(configData%use_comsol)
+
+                    
 
                     ! MODEL OUTPUT
                     ! INPUT B
@@ -897,6 +921,10 @@
 
                     call readInteger(configData%nxe)
                     call readInteger(configData%nye)
+
+                   call readLogical(configData%imposeRearBoundaryUplift)
+                   call readReal(configData%imposeRearBoundaryUpliftRate)
+                   call readReal(configData%imposeRearBoundaryUpliftMaxElevation)
 
 
                     ! EROSION: FLUVIAL

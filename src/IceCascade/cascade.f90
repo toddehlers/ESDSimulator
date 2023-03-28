@@ -140,6 +140,7 @@
         use m_diffusion_erosion
         use m_mass_balance
         use m_update_time_step
+        use m_UpdateBoundaryNodes
         use m_find_catchment
         use m_find_neighbours
         use m_tectonic_movement
@@ -153,6 +154,7 @@
         use m_ice
         use m_check_mesh
         use m_rainmaker
+        use m_rainmaker_imposed
         use m_MOVEtoCascade
         use m_checkMeshResolution
         implicit none
@@ -686,7 +688,7 @@
 
 ! initalize orographic time counter (via TE code 10/06)
         oro_time=configData%calc_rain + 1.0_8
-      
+
 ! intialize ice time counter BJY 101109
         ice_time=dble(configData%calc_ice + 1)
         global_iceIsRunning = .FALSE.
@@ -742,7 +744,11 @@
                 call MOVEtoCascadeVelocityField(configData)
                 call MOVEtoCascadeUplift(configData)
             end if
-
+            
+! Update Boundary Nodes for Uplift
+            if (configData%imposeRearBoundaryUplift) then
+            call UpdateBoundaryNodes(configData) ! Added by VMBP Jan2020
+            end if
 
 ! add tectonic horizontal movement (modified by PRE Jan2017)
             if (configData%ihorizontal) then
@@ -777,20 +783,34 @@
 ! which cases reinterpolation of the nodal topography
 ! on to the regular grid in routine orography_new ghr 07/01
 
+            ! added third option for precipitation Jan 2020
+            ! Victoria M Buford Parks
 ! DEBUG MODE 10/11/01 on next line
             water=orwater
             oro_time = oro_time+global_cascade_dt
             if ((oro_time > configData%calc_rain).or.(cascade_istep == 1)) then
-                print*,'rainmaker: total topography (surface +ice)',oro_time, configData%calc_rain
-                oro_time = 0.0_8
+                if (configData%iflag_precip.lt.3) then ! for options 1 and 2
+                    print*,'rainmaker: total topography (surface +ice)',oro_time, configData%calc_rain
+                    oro_time = 0.0_8
      
 !  NOTE:  CHanged h from 'tott' total topography because weird things were happening with ice now that rainmaker builds ice topography       
-                call check_h(25)
-                call rainmaker(configData)
-                call check_h(26)
-                orwater=water
+                    call check_h(25)
+                    call rainmaker(configData)
+                    call check_h(26)
+                    orwater=water
+                endif
             end if
-
+            
+            if (configData%iflag_precip.eq.3) then
+                if ((oro_time > configData%imposedPrecipUpdateTime).or.(cascade_istep == 1)) then
+                    print*, "time: ",time,"oro_time: ", oro_time, "Calling rainmaker_imposed"
+                    call rainmaker_imposed(configData)
+                    ! Restart orographic time counter
+                    oro_time = 0.0_8
+                    orwater=water
+                endif
+                
+            endif
             if (ivocal) call debug ('cascade$')
 
 
